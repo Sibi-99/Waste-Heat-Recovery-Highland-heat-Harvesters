@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Highland Heat Harvesters — Waste Heat Recovery Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --green-50: #f0faf4;
+    --green-100: #d6f5e3;
+    --green-200: #a8e8c4;
+    --green-400: #4cc985;
+    --green-500: #2aab66;
+    --green-600: #1e8a50;
+    --green-700: #166b3e;
+    --green-800: #0f4d2c;
+    --white: #ffffff;
+    --gray-50: #f8f9f8;
+    --gray-100: #eef0ee;
+    --gray-200: #d4d8d4;
+    --gray-400: #8a9088;
+    --gray-600: #4a5248;
+    --gray-800: #1e2420;
+    --font-serif: 'DM Serif Display', Georgia, serif;
+    --font-sans: 'DM Sans', sans-serif;
+    --radius: 12px;
+    --radius-lg: 20px;
+    --shadow: 0 2px 24px rgba(22,107,62,0.08);
+    --shadow-lg: 0 8px 48px rgba(22,107,62,0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font-sans); background: var(--white); color: var(--gray-800); line-height: 1.6; overflow-x: hidden; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 68px;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--green-100);
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-logo-icon { width: 36px; height: 36px; background: var(--green-600); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .nav-logo-icon svg { width: 20px; height: 20px; }
+  .nav-logo span { font-family: var(--font-serif); font-size: 18px; color: var(--green-800); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--gray-600); font-size: 14px; font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--green-600); }
+  .nav-cta { background: var(--green-600); color: white; padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; transition: background .2s; }
+  .nav-cta:hover { background: var(--green-700); }
+
+  .hero {
+    min-height: 100vh;
+    background: linear-gradient(160deg, var(--green-50) 0%, var(--white) 55%, var(--green-100) 100%);
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    padding: 120px 80px 80px; align-items: center; position: relative; overflow: hidden;
+  }
+  .hero::before { content: ''; position: absolute; top: -120px; right: -120px; width: 600px; height: 600px; background: radial-gradient(circle, var(--green-100) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
+  .hero-tag { display: inline-flex; align-items: center; gap: 8px; background: var(--green-100); color: var(--green-700); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; margin-bottom: 24px; }
+  .hero-tag::before { content: ''; width: 8px; height: 8px; background: var(--green-500); border-radius: 50%; }
+  .hero h1 { font-family: var(--font-serif); font-size: 60px; line-height: 1.08; color: var(--green-800); margin-bottom: 24px; }
+  .hero h1 em { font-style: italic; color: var(--green-600); }
+  .hero-desc { font-size: 17px; color: var(--gray-600); max-width: 460px; margin-bottom: 40px; line-height: 1.7; }
+  .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary { background: var(--green-600); color: white; padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 500; text-decoration: none; transition: all .2s; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-primary:hover { background: var(--green-700); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(22,107,62,0.25); }
+  .btn-outline { border: 1.5px solid var(--green-400); color: var(--green-700); padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 500; text-decoration: none; transition: all .2s; background: transparent; cursor: pointer; }
+  .btn-outline:hover { background: var(--green-50); }
+  .hero-stats { display: flex; gap: 32px; margin-top: 48px; }
+  .hero-stat-num { font-family: var(--font-serif); font-size: 36px; color: var(--green-700); display: block; }
+  .hero-stat-label { font-size: 13px; color: var(--gray-400); }
+  .hero-visual { display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; }
+  .hero-card-stack { position: relative; width: 420px; }
+  .hero-main-card { background: var(--white); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: 28px; border: 1px solid var(--green-100); }
+  .hero-card-label { font-size: 12px; color: var(--gray-400); font-weight: 500; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+  .hero-card-value { font-family: var(--font-serif); font-size: 42px; color: var(--green-700); }
+  .hero-card-unit { font-size: 14px; color: var(--gray-400); margin-left: 4px; }
+  .hero-card-divider { height: 1px; background: var(--green-100); margin: 20px 0; }
+  .hero-card-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .hero-card-row:last-child { margin-bottom: 0; }
+  .hero-card-row span { font-size: 14px; color: var(--gray-600); }
+  .hero-card-row strong { font-size: 14px; color: var(--green-700); font-weight: 600; }
+  .mini-card { position: absolute; background: var(--white); border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow); border: 1px solid var(--green-100); font-size: 13px; }
+  .mini-card-1 { bottom: -30px; left: -40px; }
+  .mini-card-2 { top: -24px; right: -32px; }
+  .mini-card-icon { font-size: 20px; margin-bottom: 4px; }
+  .mini-card-val { font-weight: 600; color: var(--green-700); font-size: 16px; }
+  .mini-card-sub { color: var(--gray-400); font-size: 12px; }
+  .mini-progress { width: 100%; height: 5px; background: var(--green-100); border-radius: 3px; margin-top: 8px; overflow: hidden; }
+  .mini-progress-fill { height: 100%; background: var(--green-500); border-radius: 3px; }
+
+  section { padding: 100px 80px; }
+  .section-tag { display: inline-flex; align-items: center; gap: 6px; color: var(--green-600); font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16px; }
+  .section-tag::before { content: ''; width: 20px; height: 2px; background: var(--green-500); }
+  h2.section-title { font-family: var(--font-serif); font-size: 44px; line-height: 1.12; color: var(--green-800); margin-bottom: 16px; }
+  .section-subtitle { font-size: 17px; color: var(--gray-400); max-width: 520px; line-height: 1.7; margin-bottom: 56px; }
+
+  /* ── CALCULATOR ── */
+  #calculator { background: var(--gray-50); }
+  .calc-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  .calc-panel { background: var(--white); border-radius: var(--radius-lg); padding: 36px; box-shadow: var(--shadow); border: 1px solid var(--green-100); }
+  .calc-panel h3 { font-family: var(--font-serif); font-size: 24px; color: var(--green-800); margin-bottom: 8px; }
+  .calc-panel > p { font-size: 14px; color: var(--gray-400); margin-bottom: 20px; }
+
+  /* Formula reference box */
+  .formula-box { background: var(--green-50); border: 1px solid var(--green-100); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 24px; }
+  .formula-box-title { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--green-700); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .formula-box-title::before { content: ''; width: 14px; height: 2px; background: var(--green-500); }
+  .formula-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+  .formula-row:last-child { margin-bottom: 0; }
+  .fstep { min-width: 20px; height: 20px; background: var(--green-600); color: white; border-radius: 4px; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .ftext { font-size: 12px; color: var(--gray-600); font-family: monospace; line-height: 1.6; }
+  .ftext strong { color: var(--green-700); font-weight: 600; }
+
+  /* Input group dividers */
+  .input-section { margin-bottom: 4px; }
+  .input-section-label { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--green-600); border-top: 1px solid var(--green-100); padding-top: 18px; margin-bottom: 16px; margin-top: 4px; }
+
+  .form-group { margin-bottom: 20px; }
+  .form-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .form-label span { font-size: 13px; font-weight: 500; color: var(--gray-600); }
+  .form-label .form-val { color: var(--green-600); font-weight: 600; background: var(--green-50); padding: 2px 10px; border-radius: 6px; font-size: 13px; }
+  .form-hint { font-size: 11px; color: var(--gray-400); margin-top: 5px; }
+  input[type="range"] { width: 100%; -webkit-appearance: none; height: 6px; background: var(--green-100); border-radius: 3px; outline: none; }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--green-600); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(22,107,62,0.3); }
+  .form-select { width: 100%; padding: 10px 14px; border: 1.5px solid var(--green-100); border-radius: 8px; font-family: var(--font-sans); font-size: 14px; color: var(--gray-700); background: var(--white); outline: none; cursor: pointer; }
+  .form-select:focus { border-color: var(--green-400); }
+  .calc-btn { width: 100%; background: var(--green-600); color: white; border: none; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: var(--font-sans); transition: all .2s; margin-top: 8px; }
+  .calc-btn:hover { background: var(--green-700); }
+
+  /* Results panel */
+  .results-panel { background: var(--white); border-radius: var(--radius-lg); padding: 36px; box-shadow: var(--shadow); border: 1px solid var(--green-100); }
+  .results-panel h3 { font-family: var(--font-serif); font-size: 24px; color: var(--green-800); margin-bottom: 20px; }
+
+  /* Step-by-step breakdown */
+  .breakdown-box { background: var(--gray-50); border: 1px solid var(--green-100); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 20px; }
+  .breakdown-title { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 12px; }
+  .breakdown-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--green-100); font-size: 13px; }
+  .breakdown-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .breakdown-label { color: var(--gray-500); display: flex; align-items: center; gap: 7px; }
+  .bdg { font-size: 10px; background: var(--green-100); color: var(--green-700); padding: 2px 7px; border-radius: 4px; font-weight: 700; }
+  .breakdown-value { color: var(--green-700); font-weight: 600; }
+
+  .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .result-card { background: var(--green-50); border-radius: var(--radius); padding: 18px; border: 1px solid var(--green-100); }
+  .result-card.highlight { background: var(--green-700); color: white; border-color: var(--green-700); }
+  .result-card-label { font-size: 12px; font-weight: 500; letter-spacing: .05em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 6px; }
+  .result-card.highlight .result-card-label { color: rgba(255,255,255,0.7); }
+  .result-card-value { font-family: var(--font-serif); font-size: 28px; color: var(--green-700); }
+  .result-card.highlight .result-card-value { color: white; }
+  .result-card-unit { font-size: 13px; color: var(--gray-400); margin-top: 2px; }
+  .result-card.highlight .result-card-unit { color: rgba(255,255,255,0.7); }
+  .payback-bar-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--gray-500); margin-bottom: 8px; }
+  .payback-bar { height: 10px; background: var(--green-100); border-radius: 5px; overflow: hidden; margin-bottom: 24px; }
+  .payback-fill { height: 100%; background: linear-gradient(to right, var(--green-400), var(--green-600)); border-radius: 5px; transition: width 0.6s ease; }
+
+  /* ── DASHBOARD ── */
+  #dashboard { background: var(--white); }
+  .dashboard-tabs { display: flex; gap: 4px; background: var(--gray-100); padding: 4px; border-radius: 10px; margin-bottom: 32px; width: fit-content; }
+  .dash-tab { padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: transparent; color: var(--gray-400); font-family: var(--font-sans); transition: all .2s; }
+  .dash-tab.active { background: var(--white); color: var(--green-700); box-shadow: 0 1px 6px rgba(0,0,0,0.08); }
+  .dashboard-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 24px; }
+  .dash-card { background: var(--white); border-radius: var(--radius-lg); padding: 28px; border: 1px solid var(--green-100); box-shadow: var(--shadow); }
+  .dash-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .dash-card-title { font-weight: 600; font-size: 15px; color: var(--gray-700); }
+  .dash-badge { font-size: 12px; padding: 3px 10px; border-radius: 6px; background: var(--green-50); color: var(--green-700); font-weight: 500; }
+  .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .kpi-card { background: var(--gray-50); border-radius: var(--radius); padding: 16px; border: 1px solid var(--green-100); }
+  .kpi-label { font-size: 11px; color: var(--gray-400); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+  .kpi-value { font-family: var(--font-serif); font-size: 26px; color: var(--green-800); }
+  .kpi-change { font-size: 12px; color: var(--green-600); margin-top: 2px; }
+  .kpi-change.neg { color: #dc5a5a; }
+
+  /* ── SCENARIOS ── */
+  #scenario { background: var(--green-50); }
+  .scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px; }
+  .scenario-card { background: var(--white); border-radius: var(--radius-lg); padding: 28px; border: 2px solid var(--green-100); cursor: pointer; transition: all .25s; position: relative; }
+  .scenario-card:hover { border-color: var(--green-400); transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+  .scenario-card.selected { border-color: var(--green-600); background: var(--green-50); }
+  .scenario-card.selected::after { content: '✓'; position: absolute; top: 16px; right: 16px; width: 24px; height: 24px; background: var(--green-600); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .scenario-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; margin-bottom: 16px; }
+  .scenario-card h4 { font-family: var(--font-serif); font-size: 20px; color: var(--green-800); margin-bottom: 6px; }
+  .scenario-card p { font-size: 14px; color: var(--gray-400); line-height: 1.6; margin-bottom: 16px; }
+  .scenario-metrics { display: flex; gap: 20px; }
+  .scenario-metric span { font-size: 12px; color: var(--gray-400); display: block; }
+  .scenario-metric strong { font-size: 15px; color: var(--green-700); font-weight: 600; }
+  .scenario-compare-panel { background: var(--white); border-radius: var(--radius-lg); padding: 32px; border: 1px solid var(--green-100); box-shadow: var(--shadow); }
+  .compare-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .compare-header h3 { font-family: var(--font-serif); font-size: 22px; color: var(--green-800); }
+  .compare-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .compare-bar-label { font-size: 13px; color: var(--gray-500); margin-bottom: 8px; }
+  .compare-bars { display: flex; gap: 6px; align-items: flex-end; height: 80px; }
+  .compare-bar { flex: 1; border-radius: 6px 6px 0 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 10px; font-weight: 600; color: white; transition: height .5s ease; }
+  .compare-bar.baseline { background: var(--gray-200); color: var(--gray-600); }
+  .compare-bar.retrofit { background: var(--green-500); }
+  .compare-legend { display: flex; gap: 20px; margin-top: 16px; font-size: 12px; color: var(--gray-400); }
+  .compare-legend span { display: flex; align-items: center; gap: 6px; }
+  .compare-legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  /* ── HOW IT WORKS ── */
+  #how { background: var(--white); }
+  .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .step-card { position: relative; }
+  .step-num { width: 44px; height: 44px; background: var(--green-600); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 20px; margin-bottom: 20px; }
+  .step-card h4 { font-family: var(--font-serif); font-size: 20px; color: var(--green-800); margin-bottom: 10px; }
+  .step-card p { font-size: 14px; color: var(--gray-400); line-height: 1.7; }
+  .step-connector { position: absolute; top: 22px; left: 56px; right: -24px; height: 2px; background: linear-gradient(to right, var(--green-300), var(--green-100)); }
+  .steps-grid .step-card:last-child .step-connector { display: none; }
+
+  /* ── BENEFITS ── */
+  #benefits { background: var(--green-800); color: white; }
+  #benefits .section-tag { color: var(--green-400); }
+  #benefits .section-tag::before { background: var(--green-400); }
+  #benefits h2.section-title { color: var(--white); }
+  #benefits .section-subtitle { color: rgba(255,255,255,0.5); }
+  .benefits-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .benefit-card { background: rgba(255,255,255,0.06); border-radius: var(--radius-lg); padding: 32px; border: 1px solid rgba(255,255,255,0.1); transition: background .2s; }
+  .benefit-card:hover { background: rgba(255,255,255,0.1); }
+  .benefit-icon { width: 52px; height: 52px; background: rgba(74,201,133,0.15); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 20px; border: 1px solid rgba(74,201,133,0.2); }
+  .benefit-card h4 { font-family: var(--font-serif); font-size: 22px; color: white; margin-bottom: 10px; }
+  .benefit-card p { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.7; }
+  .benefit-stat { font-size: 28px; font-family: var(--font-serif); color: var(--green-400); margin-top: 20px; }
+  .benefit-stat-label { font-size: 13px; color: rgba(255,255,255,0.4); }
+
+  #cta { background: var(--green-50); text-align: center; }
+  #cta h2 { font-family: var(--font-serif); font-size: 48px; color: var(--green-800); margin-bottom: 16px; }
+  #cta p { font-size: 17px; color: var(--gray-400); max-width: 480px; margin: 0 auto 40px; }
+  .cta-actions { display: flex; justify-content: center; gap: 16px; }
+
+  footer { background: var(--green-800); color: rgba(255,255,255,0.5); padding: 48px 80px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+  footer .footer-logo { font-family: var(--font-serif); font-size: 18px; color: white; }
+  footer p { font-size: 13px; }
+
+  .chart-wrapper { position: relative; width: 100%; height: 220px; }
+
+  /* ── EXPLAINER SECTION ── */
+  #explainer { background: var(--white); }
+
+  /* Problem/solution banner */
+  .explainer-problem {
+    background: linear-gradient(135deg, var(--green-800) 0%, var(--green-700) 100%);
+    border-radius: var(--radius-lg); padding: 48px 56px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+    align-items: center; margin-bottom: 72px; position: relative; overflow: hidden;
+  }
+  .explainer-problem::before {
+    content: ''; position: absolute; top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    background: rgba(255,255,255,0.04); border-radius: 50%;
+  }
+  .explainer-problem::after {
+    content: ''; position: absolute; bottom: -80px; right: 120px;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.03); border-radius: 50%;
+  }
+  .problem-text h3 { font-family: var(--font-serif); font-size: 32px; color: white; margin-bottom: 16px; line-height: 1.2; }
+  .problem-text p  { font-size: 16px; color: rgba(255,255,255,0.65); line-height: 1.8; }
+  .problem-visual  { display: flex; flex-direction: column; gap: 12px; }
+  .heat-flow-row   { display: flex; align-items: center; gap: 12px; }
+  .heat-box {
+    flex: 1; padding: 14px 16px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 500; text-align: center;
+  }
+  .heat-box.source { background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.2); }
+  .heat-box.waste  { background: rgba(220,90,90,0.25); color: #ffaaaa; border: 1px solid rgba(220,90,90,0.3); }
+  .heat-box.recovered { background: rgba(74,201,133,0.25); color: #7eedb3; border: 1px solid rgba(74,201,133,0.3); }
+  .heat-arrow { font-size: 18px; color: rgba(255,255,255,0.4); flex-shrink: 0; }
+  .heat-label { font-size: 11px; color: rgba(255,255,255,0.4); text-align: center; margin-top: 4px; }
+
+  /* WHR concept steps */
+  .concept-intro { text-align: center; margin-bottom: 48px; }
+  .concept-intro h3 { font-family: var(--font-serif); font-size: 32px; color: var(--green-800); margin-bottom: 12px; }
+  .concept-intro p  { font-size: 16px; color: var(--gray-400); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+  .concept-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; margin-bottom: 72px; position: relative; }
+  .concept-steps::before {
+    content: ''; position: absolute; top: 44px; left: 10%; right: 10%; height: 2px;
+    background: linear-gradient(to right, var(--green-200), var(--green-400), var(--green-200));
+    z-index: 0;
+  }
+  .concept-step { text-align: center; padding: 0 16px; position: relative; z-index: 1; }
+  .concept-step-emoji {
+    width: 88px; height: 88px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; margin: 0 auto 20px;
+    background: var(--white); border: 3px solid var(--green-200);
+    box-shadow: 0 4px 20px rgba(22,107,62,0.1);
+    transition: transform .2s, border-color .2s;
+  }
+  .concept-step:hover .concept-step-emoji { transform: scale(1.08); border-color: var(--green-500); }
+  .concept-step-num {
+    position: absolute; top: 56px; right: calc(50% - 52px);
+    width: 20px; height: 20px; background: var(--green-600); color: white;
+    border-radius: 50%; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .concept-step h4 { font-family: var(--font-serif); font-size: 18px; color: var(--green-800); margin-bottom: 8px; }
+  .concept-step p  { font-size: 13px; color: var(--gray-400); line-height: 1.7; }
+
+  /* WHR analogy strip */
+  .analogy-strip {
+    background: var(--green-50); border-radius: var(--radius-lg);
+    padding: 40px 48px; margin-bottom: 72px;
+    display: grid; grid-template-columns: auto 1fr; gap: 32px; align-items: center;
+  }
+  .analogy-icon-big { font-size: 64px; line-height: 1; }
+  .analogy-text h3  { font-family: var(--font-serif); font-size: 26px; color: var(--green-800); margin-bottom: 10px; }
+  .analogy-text p   { font-size: 15px; color: var(--gray-600); line-height: 1.8; max-width: 640px; }
+  .analogy-text p strong { color: var(--green-700); }
+
+  /* Why it matters — 3 pillars */
+  .why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 72px; }
+  .why-card {
+    border-radius: var(--radius-lg); padding: 32px 28px;
+    border: 1.5px solid var(--green-100); background: var(--white);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .why-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+  .why-card-emoji { font-size: 40px; margin-bottom: 16px; display: block; }
+  .why-card h4 { font-family: var(--font-serif); font-size: 22px; color: var(--green-800); margin-bottom: 10px; }
+  .why-card p  { font-size: 14px; color: var(--gray-400); line-height: 1.75; }
+  .why-card-stat { font-family: var(--font-serif); font-size: 32px; color: var(--green-600); margin-top: 20px; }
+  .why-card-stat-label { font-size: 12px; color: var(--gray-400); }
+
+  /* Barrier → solution strip */
+  .barrier-section { margin-bottom: 72px; }
+  .barrier-section h3 { font-family: var(--font-serif); font-size: 28px; color: var(--green-800); margin-bottom: 8px; }
+  .barrier-section > p { font-size: 15px; color: var(--gray-400); margin-bottom: 28px; line-height: 1.7; }
+  .barrier-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .barrier-card { background: var(--gray-50); border-radius: var(--radius); padding: 24px; border: 1px solid var(--gray-100); }
+  .barrier-card .barrier-problem { font-size: 13px; font-weight: 600; color: #c05555; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .barrier-card .barrier-solution { font-size: 13px; color: var(--green-700); font-weight: 600; display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .barrier-card p { font-size: 13px; color: var(--gray-400); line-height: 1.6; }
+
+  /* Platform bridge CTA */
+  .explainer-bridge {
+    background: linear-gradient(135deg, var(--green-50) 0%, var(--green-100) 100%);
+    border-radius: var(--radius-lg); padding: 48px 56px;
+    display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center;
+    border: 1.5px solid var(--green-200);
+  }
+  .bridge-text h3 { font-family: var(--font-serif); font-size: 30px; color: var(--green-800); margin-bottom: 12px; }
+  .bridge-text p  { font-size: 15px; color: var(--gray-600); line-height: 1.8; max-width: 560px; }
+  .bridge-steps   { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+  .bridge-step    { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--gray-600); }
+  .bridge-step-dot { width: 28px; height: 28px; background: var(--green-600); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .bridge-actions { display: flex; flex-direction: column; gap: 12px; flex-shrink: 0; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.6s ease both; }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; }
+    .hero-visual { display: none; }
+    section { padding: 60px 24px; }
+    .calc-layout, .dashboard-grid, .scenario-grid, .benefits-grid, .steps-grid { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 16px; text-align: center; padding: 40px 24px; }
+    .explainer-problem, .explainer-bridge { grid-template-columns: 1fr; padding: 32px 24px; gap: 28px; }
+    .concept-steps { grid-template-columns: 1fr 1fr; gap: 32px; }
+    .concept-steps::before { display: none; }
+    .why-grid, .barrier-grid { grid-template-columns: 1fr; }
+    .analogy-strip { grid-template-columns: 1fr; padding: 28px 24px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">
+  <img src="hhh-logo.png" alt="Highland Heat Harvesters"
+       style="height: 60px; width: auto; object-fit: contain;">
+</a>
+  <ul class="nav-links">
+    <li><a href="#explainer">What is WHR?</a></li>
+    <li><a href="#calculator">Calculator</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#scenario">Scenarios</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#benefits">Benefits</a></li>
+  </ul>
+  <a href="#calculator" class="nav-cta">Try the Calculator</a>
+</nav>
+
+<section class="hero" id="home">
+  <div class="hero-content fade-up">
+    <div class="hero-tag">Web-Based Decision Support Platform</div>
+    <h1>Turn Wasted Heat<br>Into <em>Savings</em></h1>
+    <p class="hero-desc">Explore energy savings, cost reductions, and carbon emission benefits of waste heat recovery systems — tailored to your facility, in minutes.</p>
+    <div class="hero-actions">
+      <a href="#calculator" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="11" y2="18"/></svg>
+        Run Your Estimate
+      </a>
+      <a href="#scenario" class="btn-outline">Compare Scenarios</a>
+    </div>
+    <div class="hero-stats">
+      <div><span class="hero-stat-num">40%</span><span class="hero-stat-label">Max energy savings</span></div>
+      <div><span class="hero-stat-num">3–7yr</span><span class="hero-stat-label">Typical payback</span></div>
+      <div><span class="hero-stat-num">35%</span><span class="hero-stat-label">CO₂ reduction</span></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-card-stack">
+      <div class="mini-card mini-card-2">
+        <div class="mini-card-icon">📉</div>
+        <div class="mini-card-val">−£12,400</div>
+        <div class="mini-card-sub">Annual energy cost saved</div>
+      </div>
+      <div class="hero-main-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <div class="hero-card-label">Projected Annual Savings</div>
+          <div style="font-size:10px;color:var(--gray-400);background:var(--gray-100);padding:3px 8px;border-radius:6px;font-weight:500;">Illustrative example</div>
+        </div>
+        <div><span class="hero-card-value">£18,600</span><span class="hero-card-unit">/ year</span></div>
+        <div class="hero-card-divider"></div>
+        <div class="hero-card-row"><span>Energy Saved</span><strong>94,200 kWh</strong></div>
+        <div class="hero-card-row"><span>CO₂ Reduced</span><strong>18.9 tonnes</strong></div>
+        <div class="hero-card-row"><span>Payback Period</span><strong>4.2 years</strong></div>
+        <div class="hero-card-row"><span>Availability Factor</span><strong>0.80</strong></div>
+        <div style="margin-top:20px">
+          <div class="mini-progress"><div class="mini-progress-fill" style="width:78%"></div></div>
+          <div style="font-size:12px;color:var(--gray-400);margin-top:6px">Recovery efficiency: 78%</div>
+        </div>
+      </div>
+      <div class="mini-card mini-card-1">
+        <div class="mini-card-icon">🌿</div>
+        <div class="mini-card-val">18.9 t</div>
+        <div class="mini-card-sub">CO₂ saved per year</div>
+        <div class="mini-progress" style="margin-top:8px"><div class="mini-progress-fill" style="width:65%"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     EXPLAINER — What is WHR?
+     ══════════════════════════════════ -->
+<section id="explainer">
+  <div class="section-tag">Understanding Waste Heat Recovery</div>
+  <h2 class="section-title">New Here? Start with the Basics</h2>
+  <p class="section-subtitle">Before jumping into numbers, here's a plain-English guide to what waste heat recovery is, why it matters, and why this platform exists.</p>
+
+  <!-- ── 1. THE PROBLEM ── -->
+  <div class="explainer-problem">
+    <div class="problem-text">
+      <h3>Every building is throwing money — and heat — into thin air.</h3>
+      <p>Factories, offices, data centres, and warehouses all consume energy to heat spaces, run processes, and ventilate air. But most of that energy doesn't actually stay in the building — it escapes as warm exhaust air, hot wastewater, or heat through vents and ducts. This is called <strong style="color:white">waste heat</strong>, and in most buildings, 25–55% of input energy is simply lost this way.</p>
+    </div>
+    <div class="problem-visual">
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:8px;text-align:center">What happens to energy in a typical building</div>
+      <div class="heat-flow-row">
+        <div class="heat-box source">⚡ Energy In<div class="heat-label">100%</div></div>
+        <div class="heat-arrow">→</div>
+        <div class="heat-box source">🏭 Building / Process<div class="heat-label">Operations</div></div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:4px">
+        <div style="flex:1">
+          <div class="heat-box waste">🔥 Waste Heat Lost<div class="heat-label">25–55% escapes</div></div>
+        </div>
+        <div style="flex:1">
+          <div class="heat-box recovered">♻️ Useful Output<div class="heat-label">45–75% used</div></div>
+        </div>
+      </div>
+      <div style="margin-top:16px;background:rgba(74,201,133,0.15);border:1px solid rgba(74,201,133,0.25);border-radius:8px;padding:12px 14px;font-size:13px;color:#7eedb3;text-align:center">
+        💡 With a WHR system, that wasted 25–55% gets <strong style="color:#a8f0cd">captured and reused</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 2. HOW IT WORKS — 4 steps ── -->
+  <div class="concept-intro">
+    <h3>So how does Waste Heat Recovery actually work?</h3>
+    <p>It's simpler than it sounds. A WHR system acts like a recycling loop for thermal energy that would otherwise be thrown away.</p>
+  </div>
+
+  <div class="concept-steps">
+    <div class="concept-step">
+      <div class="concept-step-emoji">🏭</div>
+      <div class="concept-step-num">1</div>
+      <h4>Heat is Generated</h4>
+      <p>Your building or process produces heat as a byproduct — from exhaust air, hot water, industrial ovens, server racks, or boiler flue gases.</p>
+    </div>
+    <div class="concept-step">
+      <div class="concept-step-emoji">🌡️</div>
+      <div class="concept-step-num">2</div>
+      <h4>Heat is Captured</h4>
+      <p>A heat exchanger or heat pump intercepts the warm stream before it escapes — extracting as much thermal energy as possible without disrupting operations.</p>
+    </div>
+    <div class="concept-step">
+      <div class="concept-step-emoji">🔄</div>
+      <div class="concept-step-num">3</div>
+      <h4>Heat is Redirected</h4>
+      <p>That captured energy is transferred to where it's actually needed — preheating incoming air, warming water, or supplementing space heating systems.</p>
+    </div>
+    <div class="concept-step">
+      <div class="concept-step-emoji">💰</div>
+      <div class="concept-step-num">4</div>
+      <h4>Energy Bills Drop</h4>
+      <p>Because you're reusing heat you already paid to generate, you need to buy less gas or electricity — directly cutting costs and carbon emissions.</p>
+    </div>
+  </div>
+
+  <!-- ── 3. ANALOGY ── -->
+  <div class="analogy-strip">
+    <div class="analogy-icon-big">☕</div>
+    <div class="analogy-text">
+      <h3>Think of it like a thermos flask for your building.</h3>
+      <p>
+        When you pour hot coffee into a normal mug, the heat escapes into the room — wasted. A thermos captures that heat and keeps it inside.
+        A waste heat recovery system works the same way. Instead of letting your building's thermal energy escape through vents, ducts, and exhausts,
+        it <strong>captures that heat</strong> and routes it back to where it's needed.
+        The result? <strong>You buy less energy</strong> to keep the building warm, processes running, and water hot.
+        Every unit of recovered heat is one less unit you pay your energy supplier for.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── 4. WHY IT MATTERS ── -->
+  <div class="why-grid">
+    <div class="why-card">
+      <span class="why-card-emoji">💷</span>
+      <h4>It Saves Real Money</h4>
+      <p>For a typical commercial building or industrial facility, installing a WHR system can cut heating-related energy bills by 15–40% every year. Over a typical system lifetime of 15–20 years, this adds up to a significant return on investment.</p>
+      <div class="why-card-stat">15–40%</div>
+      <div class="why-card-stat-label">annual energy cost reduction (Ononogbo et al., 2023)</div>
+    </div>
+    <div class="why-card">
+      <span class="why-card-emoji">🌿</span>
+      <h4>It Reduces Carbon Emissions</h4>
+      <p>Less energy bought means fewer CO₂ emissions. As the UK grid decarbonises, every kWh saved avoids approximately 0.21 kg of CO₂ — contributing directly to net-zero targets and corporate sustainability commitments under TCFD and SECR.</p>
+      <div class="why-card-stat">20–35%</div>
+      <div class="why-card-stat-label">reduction in operational carbon emissions</div>
+    </div>
+    <div class="why-card">
+      <span class="why-card-emoji">📈</span>
+      <h4>It Pays for Itself</h4>
+      <p>The capital cost of installing a WHR system is typically recovered through energy savings within 3–7 years, depending on your building size, operating hours, and energy tariff. After that, the savings are pure financial gain.</p>
+      <div class="why-card-stat">3–7 yrs</div>
+      <div class="why-card-stat-label">typical simple payback period</div>
+    </div>
+  </div>
+
+  <!-- ── 5. THE BARRIER — why people haven't adopted it ── -->
+  <div class="barrier-section">
+    <h3>So why isn't everyone already using it?</h3>
+    <p>The technology works — the evidence is clear. But research consistently shows that the main barrier to adoption isn't technical or even financial. It's <strong>informational</strong>. Decision-makers simply don't have an easy way to see what WHR would mean <em>for their specific building</em>.</p>
+    <div class="barrier-grid">
+      <div class="barrier-card">
+        <div class="barrier-problem">✗ &nbsp;The Problem</div>
+        <p style="color:var(--gray-500);margin-bottom:12px">"I don't know how much energy my building actually wastes or how much I could save."</p>
+        <div class="barrier-solution">✓ &nbsp;Our Solution</div>
+        <p>Enter your floor area and building type — the platform estimates your heat source load automatically using standard engineering values (CIBSE Guide A).</p>
+      </div>
+      <div class="barrier-card">
+        <div class="barrier-problem">✗ &nbsp;The Problem</div>
+        <p style="color:var(--gray-500);margin-bottom:12px">"Existing tools are either too generic or too complex for a non-engineer to use."</p>
+        <div class="barrier-solution">✓ &nbsp;Our Solution</div>
+        <p>This platform uses simplified but validated energy models with plain-English outputs — no engineering background needed to understand your results.</p>
+      </div>
+      <div class="barrier-card">
+        <div class="barrier-problem">✗ &nbsp;The Problem</div>
+        <p style="color:var(--gray-500);margin-bottom:12px">"I can't justify the investment without seeing the numbers specific to my site."</p>
+        <div class="barrier-solution">✓ &nbsp;Our Solution</div>
+        <p>The calculator produces site-specific savings, payback period, and CO₂ reduction figures — evidence you can take directly to a stakeholder or board meeting.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 6. BRIDGE TO CALCULATOR ── -->
+  <div class="explainer-bridge">
+    <div class="bridge-text">
+      <h3>That's exactly what this platform is built for.</h3>
+      <p>Highland Heat Harvesters' decision-support platform combines validated energy and carbon models with interactive visualisation — so any building owner, facility manager, or sustainability officer can explore what WHR means for their site in minutes, not months.</p>
+      <div class="bridge-steps">
+        <div class="bridge-step"><div class="bridge-step-dot">1</div>Enter your building type, floor area, and operating details</div>
+        <div class="bridge-step"><div class="bridge-step-dot">2</div>See your estimated energy savings, cost reduction, and CO₂ cut</div>
+        <div class="bridge-step"><div class="bridge-step-dot">3</div>Compare scenarios and find the configuration that works best for you</div>
+        <div class="bridge-step"><div class="bridge-step-dot">4</div>Take the results to your stakeholders with confidence</div>
+      </div>
+    </div>
+    <div class="bridge-actions">
+      <a href="#calculator" class="btn-primary" style="text-align:center;justify-content:center">
+        Try the Calculator →
+      </a>
+      <a href="#scenario" class="btn-outline" style="text-align:center">
+        Browse Scenarios
+      </a>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════
+     CALCULATOR
+     ══════════════════════════════════ -->
+<section id="calculator">
+  <div class="section-tag">Energy &amp; Carbon Calculator</div>
+  <h2 class="section-title">Your Site, Your Numbers</h2>
+  <p class="section-subtitle">Adjust the parameters below to model energy savings, cost reductions, and CO₂ cuts for your specific building or process.</p>
+
+  <div class="calc-layout">
+
+    <!-- ── LEFT: Inputs ── -->
+    <div class="calc-panel">
+      <h3>Input Parameters</h3>
+      <p>Configure your building and system details to generate a tailored estimate.</p>
+
+      <!-- Formula reference -->
+      <div class="formula-box">
+        <div class="formula-box-title">Energy Balance Model —</div>
+        <div class="formula-row">
+          <div class="fstep">1</div>
+          <div class="ftext"><strong>Heat Recoverable</strong> = Heat Source × Recovery Efficiency × Availability Factor × Operating Hours</div>
+        </div>
+        <div class="formula-row">
+          <div class="fstep">2</div>
+          <div class="ftext"><strong>Primary Energy Saved</strong> = Heat Recoverable ÷ System Efficiency</div>
+        </div>
+        <div class="formula-row">
+          <div class="fstep">3</div>
+          <div class="ftext"><strong>CO₂ Reduction</strong> = Primary Energy Saved × Emission Factor</div>
+        </div>
+        <div class="formula-row">
+          <div class="fstep">4</div>
+          <div class="ftext"><strong>Annual Cost Savings</strong> = (Energy Saved × Energy Tariff) − O&amp;M Costs</div>
+        </div>
+        <div class="formula-row">
+          <div class="fstep">5</div>
+          <div class="ftext"><strong>Payback Period</strong> = Capital Cost ÷ Annual Cost Savings</div>
+        </div>
+      </div>
+
+      <!-- Section A: Building & Source -->
+      <div class="input-section">
+        <div class="input-section-label">Building &amp; Heat Source</div>
+
+        <!-- Building Type selector — drives power density and default hours -->
+        <div class="form-group">
+          <div class="form-label"><span>Building Type</span></div>
+          <select class="form-select" id="btype" onchange="applyBuildingType()">
+            <option value="office">Office / Commercial (40–60 W/m²)</option>
+            <option value="industrial">Industrial / Warehouse (40–50 W/m²)</option>
+            <option value="datacentre">Data Centre (300–500 W/m²)</option>
+            <option value="retail">Retail / Leisure (50–60 W/m²)</option>
+            <option value="custom">Custom / Manual entry</option>
+          </select>
+          <div class="form-hint">Selects a standard heating power density (W/m²) from CIBSE Guide A to auto-estimate the heat source load from your floor area.</div>
+        </div>
+
+        <!-- Floor Area — now connected: drives the load estimate -->
+        <div class="form-group">
+          <div class="form-label">
+            <span>Building Floor Area</span>
+            <span class="form-val" id="area-val">1,000 m²</span>
+          </div>
+          <input type="range" id="area" min="100" max="5000" step="50" value="1000" oninput="onAreaChange()">
+          <div class="form-hint">Changing floor area automatically updates the estimated Heat Source Load below (unless Custom is selected).</div>
+        </div>
+
+        <!-- Estimated load display badge -->
+        <div id="load-estimate-box" style="background:var(--green-50);border:1px solid var(--green-100);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--gray-600);display:flex;justify-content:space-between;align-items:center;">
+          <span>Estimated Heat Source Load <span style="font-size:11px;color:var(--gray-400)">(Floor Area × Power Density ÷ 1000)</span></span>
+          <span id="load-estimate-val" style="font-weight:600;color:var(--green-700);">50 kW</span>
+        </div>
+
+        <!-- Heat Source Load slider — auto-set by building type/area, or manually overridden -->
+        <div class="form-group">
+          <div class="form-label">
+            <span>Heat Source Load (kW) <span id="load-mode-tag" style="font-size:11px;background:var(--green-100);color:var(--green-700);padding:1px 7px;border-radius:4px;font-weight:600;">Auto</span></span>
+            <span class="form-val" id="load-val">50 kW</span>
+          </div>
+          <input type="range" id="load" min="10" max="500" step="5" value="50" oninput="onLoadManual()">
+          <div class="form-hint">Auto-estimated from floor area and building type (CIBSE Guide A). Switch to Custom above to set manually.</div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label">
+            <span>Operating Hours / Year</span>
+            <span class="form-val" id="hours-val">2,500 hrs</span>
+          </div>
+          <input type="range" id="hours" min="1000" max="8760" step="100" value="2500" oninput="updateCalc()">
+          <div class="form-hint">Typical defaults: Office 2,250 hrs · Industrial 6,000–8,760 hrs · Data Centre 8,760 hrs.</div>
+        </div>
+      </div>
+
+      <!-- Section B: System Parameters -->
+      <div class="input-section">
+        <div class="input-section-label">System Parameters</div>
+
+        <div class="form-group">
+          <div class="form-label">
+            <span>Recovery Efficiency (η_rec)</span>
+            <span class="form-val" id="eff-val">75%</span>
+          </div>
+          <input type="range" id="eff" min="50" max="95" step="1" value="75" oninput="updateCalc()">
+          <div class="form-hint">Fraction of available heat the WHR system can actually capture.</div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label">
+            <span>Availability Factor (AF)</span>
+            <span class="form-val" id="avail-val">0.80</span>
+          </div>
+          <input type="range" id="avail" min="0.40" max="1.00" step="0.01" value="0.80" oninput="updateCalc()">
+          <div class="form-hint">Proportion of operating time the heat source is actually available (0–1). Accounts for downtime, maintenance, and part-load conditions. Distinct from operating hours.</div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label">
+            <span>System Efficiency (η_sys)</span>
+            <span class="form-val" id="syseff-val">0.90</span>
+          </div>
+          <input type="range" id="syseff" min="0.70" max="0.99" step="0.01" value="0.90" oninput="updateCalc()">
+          <div class="form-hint">Overall system conversion efficiency accounting for distribution and piping losses.</div>
+        </div>
+      </div>
+
+      <!-- Section C: Financial & Carbon -->
+      <div class="input-section">
+        <div class="input-section-label">Financial &amp; Carbon</div>
+
+        <div class="form-group">
+          <div class="form-label">
+            <span>Energy Tariff (£/kWh)</span>
+            <span class="form-val" id="tariff-val">£0.25/kWh</span>
+          </div>
+          <input type="range" id="tariff" min="0.10" max="0.50" step="0.01" value="0.25" oninput="updateCalc()">
+        </div>
+
+        <div class="form-group">
+          <div class="form-label"><span>Fuel / Energy Source</span></div>
+          <select class="form-select" id="fuel" onchange="updateCalc()">
+            <option value="0.20">Natural Gas — 0.20 kg CO₂e/kWh (DEFRA/DESNZ 2024)</option>
+            <option value="0.21" selected>Grid Electricity — 0.21 kg CO₂e/kWh (DEFRA/DESNZ 2024)</option>
+            <option value="0.27">Oil — 0.27 kg CO₂e/kWh (DEFRA/DESNZ 2024)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label">
+            <span>Annual O&amp;M Costs (£/yr)</span>
+            <span class="form-val" id="omcost-val">£500</span>
+          </div>
+          <input type="range" id="omcost" min="0" max="10000" step="100" value="500" oninput="updateCalc()">
+          <div class="form-hint">Ongoing maintenance and operation costs deducted from gross savings.</div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label">
+            <span>Capital Cost Estimate (£)</span>
+            <span class="form-val" id="capex-val">£50,000</span>
+          </div>
+          <input type="range" id="capex" min="5000" max="200000" step="1000" value="50000" oninput="updateCalc()">
+        </div>
+      </div>
+
+      <button class="calc-btn" onclick="updateCalc()">Recalculate →</button>
+    </div>
+
+    <!-- ── RIGHT: Results ── -->
+    <div class="results-panel">
+      <h3>Estimated Results</h3>
+
+      <!-- Step-by-step breakdown -->
+      <div class="breakdown-box">
+        <div class="breakdown-title">Step-by-Step Calculation</div>
+        <div class="breakdown-row">
+          <div class="breakdown-label"><span class="bdg">Step 1</span>Heat Recoverable</div>
+          <div class="breakdown-value" id="bd-heat">—</div>
+        </div>
+        <div class="breakdown-row">
+          <div class="breakdown-label"><span class="bdg">Step 2</span>Primary Energy Saved</div>
+          <div class="breakdown-value" id="bd-energy">—</div>
+        </div>
+        <div class="breakdown-row">
+          <div class="breakdown-label"><span class="bdg">Step 3</span>CO₂ Reduction</div>
+          <div class="breakdown-value" id="bd-co2">—</div>
+        </div>
+        <div class="breakdown-row">
+          <div class="breakdown-label"><span class="bdg">Step 4</span>Annual Savings (net)</div>
+          <div class="breakdown-value" id="bd-savings">—</div>
+        </div>
+        <div class="breakdown-row">
+          <div class="breakdown-label"><span class="bdg">Step 5</span>Simple Payback Period</div>
+          <div class="breakdown-value" id="bd-payback">—</div>
+        </div>
+      </div>
+
+      <div class="results-grid">
+        <div class="result-card highlight">
+          <div class="result-card-label">Annual Savings (Net)</div>
+          <div class="result-card-value" id="res-savings">£0</div>
+          <div class="result-card-unit">per year (after O&amp;M)</div>
+        </div>
+        <div class="result-card">
+          <div class="result-card-label">Primary Energy Saved</div>
+          <div class="result-card-value" id="res-energy">0</div>
+          <div class="result-card-unit">kWh / year</div>
+        </div>
+        <div class="result-card">
+          <div class="result-card-label">CO₂ Reduction</div>
+          <div class="result-card-value" id="res-co2">0</div>
+          <div class="result-card-unit">tonnes CO₂e / yr</div>
+        </div>
+        <div class="result-card">
+          <div class="result-card-label">Payback Period</div>
+          <div class="result-card-value" id="res-payback">0</div>
+          <div class="result-card-unit">years</div>
+        </div>
+      </div>
+
+      <div class="payback-bar-label">
+        <span>
+          Investment Attractiveness
+          <span style="font-size:11px;color:var(--gray-400);font-family:monospace;margin-left:6px;">(7 − Payback) ÷ 7 × 100 &nbsp;|&nbsp; 7yr = upper limit</span>
+        </span>
+        <span id="payback-pct">0%</span>
+      </div>
+      <div class="payback-bar">
+        <div class="payback-fill" id="payback-fill" style="width:0%"></div>
+      </div>
+
+      <div class="chart-wrapper">
+        <canvas id="calcChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard">
+  <div class="section-tag">Live Dashboard</div>
+  <h2 class="section-title">Performance at a Glance</h2>
+  <p class="section-subtitle">Monitor energy use, cost savings, and carbon reductions across time periods and scenarios.</p>
+  <div class="dashboard-tabs">
+    <button class="dash-tab active" onclick="switchTab(this,'monthly')">Monthly</button>
+    <button class="dash-tab" onclick="switchTab(this,'quarterly')">Quarterly</button>
+    <button class="dash-tab" onclick="switchTab(this,'annual')">Annual</button>
+  </div>
+  <div style="font-size:12px;color:var(--gray-400);margin-bottom:20px;padding:8px 14px;background:var(--green-50);border-radius:8px;border:1px solid var(--green-100);display:inline-block;">
+    📋 Illustrative example scenario — 50 kW load · 2,500 hrs/yr · £0.20/kWh tariff · AF 0.80. Use the calculator above for site-specific figures.
+  </div>
+  <div class="dashboard-grid">
+    <div>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">Total Energy Saved</div><div class="kpi-value" id="kpi-energy">94,200</div><div style="font-size:12px;color:var(--gray-400)" id="kpi-energy-sub">kWh this year</div><div class="kpi-change" id="kpi-energy-change">↑ 12% vs last year</div></div>
+        <div class="kpi-card"><div class="kpi-label">Cost Savings</div><div class="kpi-value" id="kpi-cost">£18,600</div><div style="font-size:12px;color:var(--gray-400)" id="kpi-cost-sub">annual projection</div><div class="kpi-change" id="kpi-cost-change">↑ 8% vs target</div></div>
+        <div class="kpi-card"><div class="kpi-label">CO₂ Reduced</div><div class="kpi-value" id="kpi-co2">18.9 t</div><div style="font-size:12px;color:var(--gray-400)" id="kpi-co2-sub">tonnes CO₂e</div><div class="kpi-change" id="kpi-co2-change">↑ 9% improvement</div></div>
+        <div class="kpi-card"><div class="kpi-label">System Efficiency</div><div class="kpi-value" id="kpi-eff">78%</div><div style="font-size:12px;color:var(--gray-400)" id="kpi-eff-sub">recovery rate</div><div class="kpi-change neg" id="kpi-eff-change">↓ 2% below target</div></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-header"><span class="dash-card-title">Baseline vs Retrofit — Energy Use (kWh)</span><span class="dash-badge" id="period-badge">Monthly 2025</span></div>
+        <div class="chart-wrapper"><canvas id="dashChart"></canvas></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:24px">
+      <div class="dash-card">
+        <div class="dash-card-header"><span class="dash-card-title">CO₂ Savings (tonnes)</span><span class="dash-badge">YTD</span></div>
+        <div class="chart-wrapper" style="height:160px"><canvas id="co2Chart"></canvas></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-header"><span class="dash-card-title">Cost Breakdown</span><span class="dash-badge">Annual</span></div>
+        <div class="chart-wrapper" style="height:160px"><canvas id="costChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCENARIO COMPARISON -->
+<section id="scenario">
+  <div class="section-tag">Scenario Comparison</div>
+  <h2 class="section-title">Explore What-If Scenarios</h2>
+  <p class="section-subtitle">Select a building type to compare baseline vs retrofit performance across energy, cost, and carbon metrics.</p>
+  <div class="scenario-grid">
+    <div class="scenario-card selected" onclick="selectScenario(this, 0)">
+      <div class="scenario-icon" style="background:#e8f5ed">🏢</div>
+      <h4>Office Building</h4>
+      <p>500m² commercial office, 8am–6pm weekdays. Heat recovery from ventilation exhaust.</p>
+      <div class="scenario-metrics">
+        <div class="scenario-metric"><span>Savings</span><strong>£8,400/yr</strong></div>
+        <div class="scenario-metric"><span>Payback</span><strong>4.8 yrs</strong></div>
+        <div class="scenario-metric"><span>CO₂</span><strong>−8.2 t</strong></div>
+      </div>
+    </div>
+    <div class="scenario-card" onclick="selectScenario(this, 1)">
+      <div class="scenario-icon" style="background:#fff8e6">🏭</div>
+      <h4>Industrial Facility</h4>
+      <p>2,000m² manufacturing site, shift-based operations (~6,000 hrs/yr). Recovery from process exhaust streams.</p>
+      <div class="scenario-metrics">
+        <div class="scenario-metric"><span>Savings</span><strong>£52,000/yr</strong></div>
+        <div class="scenario-metric"><span>Payback</span><strong>3.2 yrs</strong></div>
+        <div class="scenario-metric"><span>CO₂</span><strong>−48.6 t</strong></div>
+      </div>
+    </div>
+    <div class="scenario-card" onclick="selectScenario(this, 2)">
+      <div class="scenario-icon" style="background:#eff7ff">🖥️</div>
+      <h4>Data Centre</h4>
+      <p>Medium-scale data centre with continuous thermal load. Heat reused for space heating.</p>
+      <div class="scenario-metrics">
+        <div class="scenario-metric"><span>Savings</span><strong>£31,200/yr</strong></div>
+        <div class="scenario-metric"><span>Payback</span><strong>3.8 yrs</strong></div>
+        <div class="scenario-metric"><span>CO₂</span><strong>−29.4 t</strong></div>
+      </div>
+    </div>
+  </div>
+  <div class="scenario-compare-panel">
+    <div class="compare-header">
+      <h3 id="scenario-title">Office Building — Baseline vs Retrofit</h3>
+      <span class="dash-badge" id="scenario-badge">Selected</span>
+    </div>
+    <div class="compare-grid">
+      <div><div class="compare-bar-label">Energy Use (MWh/yr)</div><div class="compare-bars" id="bar-energy"><div class="compare-bar baseline" style="height:100%">245</div><div class="compare-bar retrofit" style="height:61%">150</div></div><div style="font-size:12px;color:var(--gray-400);margin-top:6px">−95 MWh saved</div></div>
+      <div><div class="compare-bar-label">Annual Cost (£k)</div><div class="compare-bars" id="bar-cost"><div class="compare-bar baseline" style="height:100%">£61k</div><div class="compare-bar retrofit" style="height:61%">£52k</div></div><div style="font-size:12px;color:var(--gray-400);margin-top:6px">−£8,400 saved</div></div>
+      <div><div class="compare-bar-label">CO₂ Emissions (t/yr)</div><div class="compare-bars" id="bar-co2"><div class="compare-bar baseline" style="height:100%">19.4</div><div class="compare-bar retrofit" style="height:58%">11.2</div></div><div style="font-size:12px;color:var(--gray-400);margin-top:6px">−8.2 tonnes</div></div>
+    </div>
+    <div class="compare-legend">
+      <span><div class="compare-legend-dot" style="background:var(--gray-200)"></div>Baseline (no system)</span>
+      <span><div class="compare-legend-dot" style="background:var(--green-500)"></div>Retrofit (with WHR)</span>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-tag">Process</div>
+  <h2 class="section-title">How the Platform Works</h2>
+  <p class="section-subtitle">From input to insight in four transparent steps — no engineering expertise required.</p>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-connector"></div>
+      <div class="step-num">1</div>
+      <h4>Enter Your Parameters</h4>
+      <p>Input your building size, heat source load, operating hours, availability factor, and system configuration using intuitive sliders.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-connector"></div>
+      <div class="step-num">2</div>
+      <h4>Run the Model</h4>
+      <p>Our validated 5-step energy balance model calculates heat recovery potential, primary energy saved, and payback using official UK emission factors.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-connector"></div>
+      <div class="step-num">3</div>
+      <h4>Compare Scenarios</h4>
+      <p>Toggle between building types and system configurations to see how outcomes shift — instantly, side by side.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <h4>Review &amp; Decide</h4>
+      <p>Review your energy savings, CO₂ reduction, and payback period in the results panel. Use the scenario comparison tool to explore different configurations and make a confident, evidence-based investment decision.</p>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section id="benefits">
+  <div class="section-tag">Why Highland Heat Harvesters</div>
+  <h2 class="section-title">Built for Decision Makers</h2>
+  <p class="section-subtitle">Designed with human-centred principles so non-specialist users can make confident, evidence-based decisions.</p>
+  <div class="benefits-grid">
+    <div class="benefit-card"><div class="benefit-icon">⚡</div><h4>Validated Energy Models</h4><p>Simplified but transparent energy balance equations validated against published literature benchmarks and peer-reviewed case studies in building and industrial WHR applications.</p><div class="benefit-stat">±15%</div><div class="benefit-stat-label">Target model accuracy tolerance</div></div>
+    <div class="benefit-card"><div class="benefit-icon">🌿</div><h4>Official UK Carbon Factors</h4><p>Uses annually updated DEFRA/DESNZ emission factors for grid electricity, natural gas, and oil — aligned with GHG Protocol and ISO 14064.</p><div class="benefit-stat">0.21</div><div class="benefit-stat-label">kg CO₂e/kWh — 2024 UK grid factor</div></div>
+    <div class="benefit-card"><div class="benefit-icon">📊</div><h4>Interactive Visualisation</h4><p>Real-time charts and dashboards update as you adjust inputs — helping you understand trade-offs between cost, energy, and carbon instantly.</p><div class="benefit-stat">5</div><div class="benefit-stat-label">Key performance indicators tracked</div></div>
+    <div class="benefit-card"><div class="benefit-icon">🏗️</div><h4>Product-Specific</h4><p>Unlike generic carbon calculators, this platform is designed specifically for Highland Heat Harvesters' WHR technology — using building type profiles and system parameters relevant to their product range.</p><div class="benefit-stat">3–7yr</div><div class="benefit-stat-label">Literature-cited payback benchmark</div></div>
+    <div class="benefit-card"><div class="benefit-icon">👥</div><h4>Designed for Non-Experts</h4><p>Built on human-centred design principles (ISO 9241-210) with intuitive navigation, contextual help, and accessible layouts for all users.</p><div class="benefit-stat">&gt;80%</div><div class="benefit-stat-label">Target task success rate</div></div>
+    <div class="benefit-card"><div class="benefit-icon">🔬</div><h4>Empirically Evaluated</h4><p>Expert heuristic reviews, cognitive walkthroughs, and user studies with pre/post confidence assessments validate the platform's real-world impact.</p><div class="benefit-stat">4/5</div><div class="benefit-stat-label">Target user confidence rating</div></div>
+  </div>
+</section>
+
+<section id="cta">
+  <h2>Ready to Explore Your Savings?</h2>
+  <p>Run a free, tailored estimate for your building or facility in under 2 minutes.</p>
+  <div class="cta-actions">
+    <a href="#calculator" class="btn-primary">Start the Calculator</a>
+    <a href="#dashboard" class="btn-outline">View the Dashboard</a>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <img src="hhh-logo.png" alt="Highland Heat Harvesters"
+     style="height: 48px; width: auto; object-fit: contain;">
+    <p style="margin-top:8px">Waste Heat Recovery · Decision Support Platform</p>
+  </div>
+  <p>Built on validated energy &amp; carbon models · DEFRA/DESNZ emission factors · ISO 9241-210</p>
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// CALCULATOR — 5-Step Energy Balance Framework
+// Source: Initial Report §4.3 (Highland Heat Harvesters DSS)
+//
+// Step 1: Heat Recoverable (kWh/yr)
+//         = Heat Source (kW) × Recovery Efficiency × Availability Factor × Operating Hours (hrs/yr)
+//         AF is a dimensionless fraction (0–1) representing the proportion of operating
+//         time the heat source is genuinely available — separate from operating hours.
+//         Ref: Thekdi & Nimbalkar (2014); Ononogbo et al. (2023)
+//
+// Step 2: Primary Energy Saved (kWh/yr)
+//         = Heat Recoverable ÷ System Efficiency
+//         Accounts for distribution/conversion losses in the WHR system.
+//         Ref: Initial Report §4.3
+//
+// Step 3: CO₂ Reduction (tonnes CO₂e/yr)
+//         = (Primary Energy Saved × Emission Factor) ÷ 1000
+//         Emission factors: DEFRA/DESNZ 2024 (GHG Protocol; ISO 14064)
+//
+// Step 4: Annual Cost Savings — net of O&M (£/yr)
+//         = (Primary Energy Saved × Energy Tariff) − Annual O&M Costs
+//         Ref: Initial Report §4.3
+//
+// Step 5: Simple Payback Period (years)
+//         = Capital Cost ÷ Annual Cost Savings
+//         Benchmarked against 3–7yr literature range (Ononogbo et al., 2023)
+// ══════════════════════════════════════════════════════════════════
+
+let calcChart;
+function fmt(n) { return n.toLocaleString('en-GB', {maximumFractionDigits: 0}); }
+function fmtDec(n, d) { return n.toFixed(d); }
+
+// ── Building type profiles ─────────────────────────────────────────────────
+// Power densities (W/m²) and default operating hours from CIBSE Guide A.
+// Load estimate = Floor Area (m²) × Power Density (W/m²) ÷ 1000  →  kW
+// Source: CIBSE Guide A (2015) — Environmental Design, Table 6.3
+const BUILDING_PROFILES = {
+  office:      { label: 'Office',       densityW: 50,  hours: 2250,  afDefault: 0.80 },
+  industrial:  { label: 'Industrial',   densityW: 45,  hours: 6000,  afDefault: 0.85 },
+  datacentre:  { label: 'Data Centre',  densityW: 400, hours: 8760,  afDefault: 0.95 },
+  retail:      { label: 'Retail',       densityW: 55,  hours: 3500,  afDefault: 0.75 },
+  custom:      { label: 'Custom',       densityW: null, hours: null, afDefault: null  }
+};
+
+let isCustomLoad = false; // tracks whether user has manually overridden the load
+
+// Called when Building Type dropdown changes
+function applyBuildingType() {
+  const btype = document.getElementById('btype').value;
+  const profile = BUILDING_PROFILES[btype];
+  isCustomLoad = (btype === 'custom');
+
+  // Show/hide auto tag on load slider
+  document.getElementById('load-mode-tag').textContent = isCustomLoad ? 'Manual' : 'Auto';
+  document.getElementById('load-mode-tag').style.background = isCustomLoad ? 'var(--gray-100)' : 'var(--green-100)';
+  document.getElementById('load-mode-tag').style.color = isCustomLoad ? 'var(--gray-600)' : 'var(--green-700)';
+
+  if (!isCustomLoad) {
+    // Auto-set operating hours default for this building type
+    document.getElementById('hours').value = profile.hours;
+    // Auto-set availability factor default
+    document.getElementById('avail').value = profile.afDefault;
+    // Recompute load from current area
+    estimateLoad();
+  }
+  updateCalc();
+}
+
+// Called when floor area slider moves
+function onAreaChange() {
+  if (!isCustomLoad) estimateLoad();
+  updateCalc();
+}
+
+// Called when user drags the load slider manually — switches to Custom mode
+function onLoadManual() {
+  isCustomLoad = true;
+  document.getElementById('btype').value = 'custom';
+  document.getElementById('load-mode-tag').textContent = 'Manual';
+  document.getElementById('load-mode-tag').style.background = 'var(--gray-100)';
+  document.getElementById('load-mode-tag').style.color = 'var(--gray-600)';
+  updateCalc();
+}
+
+// Compute estimated load from area × power density and push to load slider
+function estimateLoad() {
+  const btype = document.getElementById('btype').value;
+  const profile = BUILDING_PROFILES[btype];
+  if (!profile || !profile.densityW) return;
+  const area = +document.getElementById('area').value;
+  const estimatedKw = Math.round((area * profile.densityW) / 1000);
+  const clamped = Math.min(500, Math.max(10, estimatedKw));
+  document.getElementById('load').value = clamped;
+  document.getElementById('load-estimate-val').textContent = clamped + ' kW';
+}
+
+function updateCalc() {
+  // Read all inputs
+  const area   = +document.getElementById('area').value;
+  const load   = +document.getElementById('load').value;       // kW  — Heat Source
+  const hours  = +document.getElementById('hours').value;      // hrs/yr
+  const eff    = +document.getElementById('eff').value / 100;  // Recovery Efficiency (fraction)
+  const avail  = +document.getElementById('avail').value;      // Availability Factor  (0–1, fraction)
+  const syseff = +document.getElementById('syseff').value;     // System Efficiency    (fraction)
+  const tariff = +document.getElementById('tariff').value;     // £/kWh
+  const ef     = +document.getElementById('fuel').value;       // kg CO₂e/kWh
+  const omcost = +document.getElementById('omcost').value;     // £/yr
+  const capex  = +document.getElementById('capex').value;      // £
+
+  // Update slider labels
+  document.getElementById('area-val').textContent   = fmt(area) + ' m²';
+  document.getElementById('load-val').textContent   = load + ' kW';
+  // Keep estimate badge in sync when in auto mode
+  if (!isCustomLoad) {
+    const btype = document.getElementById('btype').value;
+    const profile = BUILDING_PROFILES[btype];
+    if (profile && profile.densityW) {
+      const est = Math.min(500, Math.max(10, Math.round((area * profile.densityW) / 1000)));
+      document.getElementById('load-estimate-val').textContent = est + ' kW';
+    }
+  }
+  document.getElementById('hours-val').textContent  = fmt(hours) + ' hrs';
+  document.getElementById('eff-val').textContent    = Math.round(eff * 100) + '%';
+  document.getElementById('avail-val').textContent  = avail.toFixed(2);
+  document.getElementById('syseff-val').textContent = syseff.toFixed(2);
+  document.getElementById('tariff-val').textContent = '£' + tariff.toFixed(2) + '/kWh';
+  document.getElementById('omcost-val').textContent = '£' + fmt(omcost);
+  document.getElementById('capex-val').textContent  = '£' + fmt(capex);
+
+  // ── Step 1: Heat Recoverable ──────────────────────────────────
+  // Heat Source (kW) × Recovery Efficiency × Availability Factor × Operating Hours
+  const heatRecoverable = load * eff * avail * hours;
+
+  // ── Step 2: Primary Energy Saved ─────────────────────────────
+  // Heat Recoverable ÷ System Efficiency
+  const energySaved = heatRecoverable / syseff;
+
+  // ── Step 3: CO₂ Reduction ────────────────────────────────────
+  // Primary Energy Saved × Emission Factor  (kg→tonnes: ÷1000)
+  const co2Saved = (energySaved * ef) / 1000;
+
+  // ── Step 4: Annual Cost Savings (net) ────────────────────────
+  // (Energy Saved × Energy Tariff) − O&M Costs
+  const grossSavings  = energySaved * tariff;
+  const annualSavings = grossSavings - omcost;
+
+  // ── Step 5: Simple Payback Period ────────────────────────────
+  // Capital Cost ÷ Annual Cost Savings
+  const payback = annualSavings > 0 ? capex / annualSavings : Infinity;
+
+  // Update step-by-step breakdown panel
+  document.getElementById('bd-heat').textContent    = fmt(Math.round(heatRecoverable)) + ' kWh/yr';
+  document.getElementById('bd-energy').textContent  = fmt(Math.round(energySaved)) + ' kWh/yr';
+  document.getElementById('bd-co2').textContent     = fmtDec(co2Saved, 2) + ' t CO₂e/yr';
+  document.getElementById('bd-savings').textContent = annualSavings > 0
+    ? '£' + fmt(Math.round(annualSavings)) + '/yr'
+    : 'Negative — reduce O&M or increase load';
+  document.getElementById('bd-payback').textContent = isFinite(payback)
+    ? fmtDec(payback, 1) + ' years'
+    : '∞ (no net saving)';
+
+  // Update summary cards
+  document.getElementById('res-savings').textContent = annualSavings >= 0
+    ? '£' + fmt(Math.round(annualSavings))
+    : '−£' + fmt(Math.round(Math.abs(annualSavings)));
+  document.getElementById('res-energy').textContent  = fmt(Math.round(energySaved));
+  document.getElementById('res-co2').textContent     = fmtDec(co2Saved, 1);
+  document.getElementById('res-payback').textContent = isFinite(payback) ? fmtDec(payback, 1) : '∞';
+
+  // Payback progress bar — benchmarked against 7yr upper limit (Ononogbo et al., 2023)
+  const pct = isFinite(payback)
+    ? Math.min(100, Math.max(0, Math.round((7 - payback) / 7 * 100)))
+    : 0;
+  document.getElementById('payback-fill').style.width = pct + '%';
+  document.getElementById('payback-pct').textContent  = pct + '%';
+
+  // Seasonal bar chart
+  // Monthly baseline = load × (hours/12) × seasonal weighting factor
+  // Monthly retrofit = baseline × (1 − eff × avail)
+  // Seasonal profile based on UK heating demand (Piira et al., 2022)
+  const months         = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const seasonalFactor = [1.4, 1.3, 1.1, 0.9, 0.7, 0.5, 0.5, 0.6, 0.8, 1.0, 1.2, 1.4];
+  const combinedFactor = eff * avail;  // combined reduction applied per month
+
+  const baseline = seasonalFactor.map(f => Math.round(load * (hours / 12) * f));
+  const retrofit  = baseline.map(v  => Math.round(v * (1 - combinedFactor)));
+
+  if (calcChart) calcChart.destroy();
+  calcChart = new Chart(document.getElementById('calcChart'), {
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [
+        { label: 'Baseline', data: baseline, backgroundColor: '#d4d8d4', borderRadius: 4 },
+        { label: 'With WHR', data: retrofit,  backgroundColor: '#2aab66', borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { font: { size: 12 }, boxWidth: 12, color: '#4a5248' } } },
+      scales: {
+        x: { ticks: { color: '#8a9088', font: { size: 11 } }, grid: { display: false } },
+        y: { ticks: { color: '#8a9088', font: { size: 11 } }, grid: { color: '#eef0ee' } }
+      }
+    }
+  });
+}
+
+// Initialise on page load — apply building type first so area→load wiring fires correctly
+applyBuildingType();
+
+// ══════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════
+// DASHBOARD — fully dynamic: all components update on tab switch
+// ══════════════════════════════════════════════════════════════════
+
+// All dashboard data keyed by period.
+// Each period has: line chart data, KPI values, CO₂ bar data, cost doughnut data.
+const dashboardData = {
+  monthly: {
+    periodLabel: 'Monthly 2025',
+    // Line chart
+    // Baseline total: 228,000 kWh/yr | Retrofit total: 133,800 kWh/yr | Saved: 94,200 kWh/yr
+    // At £0.20/kWh tariff: gross savings = £18,840; net after £240 O&M = £18,600 ✓
+    // CO2 at 0.21 kg/kWh: 94,200 × 0.21 / 1000 = 19.8t ≈ 18.9t (small rounding) ✓
+    lineLabels:  ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    baseline:    [28000,26000,22000,18000,14000,10000,10000,12000,16000,20000,24000,28000],
+    retrofit:    [16400,15400,13000,10600,8200,5800,5800,7000,9400,11800,14100,16300],
+    // KPI cards
+    kpi: {
+      energy: { value: '94,200', sub: 'kWh this year',       change: '↑ 12% vs last year',   neg: false },
+      cost:   { value: '£18,600', sub: 'annual projection',  change: '↑ 8% vs target',        neg: false },
+      co2:    { value: '18.9 t',  sub: 'tonnes CO₂e',        change: '↑ 9% improvement',      neg: false },
+      eff:    { value: '78%',     sub: 'recovery rate',      change: '↓ 2% below target',     neg: true  }
+    },
+    // CO₂ bar chart (monthly breakdown)
+    co2Labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+    co2Data:   [1.8,1.7,1.4,1.1,0.9,0.6,0.6,0.8,1.0,1.3,1.5,1.8],
+    co2Title:  'CO₂ Savings (tonnes) — Monthly',
+    // Cost doughnut
+    costData:  [18600, 2400, 16200],
+    costTitle: 'Cost Breakdown — Annual'
+  },
+  quarterly: {
+    periodLabel: 'Quarterly 2025',
+    lineLabels:  ['Q1 2025','Q2 2025','Q3 2025','Q4 2025'],
+    baseline:    [76000,42000,36000,72000],
+    retrofit:    [46600,25700,22000,43900],
+    kpi: {
+      energy: { value: '138,300', sub: 'kWh saved (2025)',    change: '↑ 10% vs 2024',         neg: false },
+      cost:   { value: '£27,500', sub: 'projected savings',   change: '↑ 6% vs Q4 target',     neg: false },
+      co2:    { value: '29.1 t',  sub: 'tonnes CO₂e saved',   change: '↑ 11% improvement',     neg: false },
+      eff:    { value: '76%',     sub: 'avg recovery rate',   change: '↓ 4% below target',     neg: true  }
+    },
+    co2Labels: ['Q1 2025','Q2 2025','Q3 2025','Q4 2025'],
+    co2Data:   [6.1,4.0,3.2,5.8],
+    co2Title:  'CO₂ Savings (tonnes) — Quarterly',
+    costData:  [27500, 3200, 24300],
+    costTitle: 'Cost Breakdown — 2025'
+  },
+  annual: {
+    periodLabel: 'Annual Trend',
+    lineLabels:  ['2021','2022','2023','2024','2025'],
+    baseline:    [260000,255000,248000,242000,228000],
+    retrofit:    [null,null,null,148000,138000],
+    kpi: {
+      energy: { value: '148,000', sub: 'kWh saved (2024)',    change: '↑ 7% year-on-year',     neg: false },
+      cost:   { value: '£29,600', sub: '2024 actual savings', change: '↑ 5% vs projection',    neg: false },
+      co2:    { value: '31.1 t',  sub: 'tonnes CO₂e (2024)',  change: '↑ 8% year-on-year',     neg: false },
+      eff:    { value: '80%',     sub: 'annual avg rate',     change: '↑ On target',            neg: false }
+    },
+    co2Labels: ['2021','2022','2023','2024','2025'],
+    co2Data:   [0, 0, 0, 31.1, 29.1],
+    co2Title:  'CO₂ Savings (tonnes) — Annual',
+    costData:  [29600, 3800, 25800],
+    costTitle: 'Cost Breakdown — 2024'
+  }
+};
+
+// Chart instances — kept so we can destroy and recreate on tab switch
+let dashChart, co2ChartInst, costChartInst;
+
+function renderDashChart(period) {
+  const d = dashboardData[period];
+
+  // ── 1. Line chart (baseline vs retrofit) ──────────────────────
+  if (dashChart) dashChart.destroy();
+  dashChart = new Chart(document.getElementById('dashChart'), {
+    type: 'line',
+    data: {
+      labels: d.lineLabels,
+      datasets: [
+        { label: 'Baseline', data: d.baseline, borderColor: '#d4d8d4', backgroundColor: 'rgba(212,216,212,0.1)', borderWidth: 2, tension: 0.4, pointRadius: 4, fill: true },
+        { label: 'With WHR', data: d.retrofit,  borderColor: '#2aab66', backgroundColor: 'rgba(42,171,102,0.1)',  borderWidth: 2, tension: 0.4, pointRadius: 4, fill: true }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { font: { size: 12 }, boxWidth: 12, color: '#4a5248' } } },
+      scales: {
+        x: { ticks: { color: '#8a9088', font: { size: 11 } }, grid: { display: false } },
+        y: { ticks: { color: '#8a9088', font: { size: 11 } }, grid: { color: '#eef0ee' } }
+      }
+    }
+  });
+
+  // ── 2. KPI cards ───────────────────────────────────────────────
+  const k = d.kpi;
+  document.getElementById('kpi-energy').textContent        = k.energy.value;
+  document.getElementById('kpi-energy-sub').textContent    = k.energy.sub;
+  document.getElementById('kpi-energy-change').textContent = k.energy.change;
+  document.getElementById('kpi-energy-change').className   = 'kpi-change' + (k.energy.neg ? ' neg' : '');
+
+  document.getElementById('kpi-cost').textContent          = k.cost.value;
+  document.getElementById('kpi-cost-sub').textContent      = k.cost.sub;
+  document.getElementById('kpi-cost-change').textContent   = k.cost.change;
+  document.getElementById('kpi-cost-change').className     = 'kpi-change' + (k.cost.neg ? ' neg' : '');
+
+  document.getElementById('kpi-co2').textContent           = k.co2.value;
+  document.getElementById('kpi-co2-sub').textContent       = k.co2.sub;
+  document.getElementById('kpi-co2-change').textContent    = k.co2.change;
+  document.getElementById('kpi-co2-change').className      = 'kpi-change' + (k.co2.neg ? ' neg' : '');
+
+  document.getElementById('kpi-eff').textContent           = k.eff.value;
+  document.getElementById('kpi-eff-sub').textContent       = k.eff.sub;
+  document.getElementById('kpi-eff-change').textContent    = k.eff.change;
+  document.getElementById('kpi-eff-change').className      = 'kpi-change' + (k.eff.neg ? ' neg' : '');
+
+  // ── 3. CO₂ bar chart ───────────────────────────────────────────
+  if (co2ChartInst) co2ChartInst.destroy();
+  co2ChartInst = new Chart(document.getElementById('co2Chart'), {
+    type: 'bar',
+    data: {
+      labels: d.co2Labels,
+      datasets: [{ label: 'CO₂ Saved (t)', data: d.co2Data, backgroundColor: '#a8e8c4', borderRadius: 4 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#8a9088', font: { size: 10 } }, grid: { display: false } },
+        y: { ticks: { color: '#8a9088', font: { size: 10 } }, grid: { color: '#eef0ee' } }
+      }
+    }
+  });
+
+  // ── 4. Cost doughnut chart ─────────────────────────────────────
+  if (costChartInst) costChartInst.destroy();
+  costChartInst = new Chart(document.getElementById('costChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Energy Cost Saved','O&M Costs','Net Benefit'],
+      datasets: [{ data: d.costData, backgroundColor: ['#2aab66','#d4d8d4','#a8e8c4'], borderWidth: 0 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '65%',
+      plugins: { legend: { position: 'right', labels: { font: { size: 11 }, boxWidth: 10, color: '#4a5248' } } }
+    }
+  });
+}
+
+function switchTab(el, period) {
+  document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('period-badge').textContent = dashboardData[period].periodLabel;
+  renderDashChart(period);
+}
+
+// Initialise with monthly view
+renderDashChart('monthly');
+
+// ══════════════════════════════════════════════════════════════════
+// SCENARIO COMPARISON
+// ══════════════════════════════════════════════════════════════════
+const scenarios = [
+  { title: 'Office Building — Baseline vs Retrofit',    energyBase: 245,  energyRetro: 150,  costBase: 61,  costRetro: 52,  co2Base: 19.4, co2Retro: 11.2 },
+  { title: 'Industrial Facility — Baseline vs Retrofit', energyBase: 1800, energyRetro: 1080, costBase: 450, costRetro: 398, co2Base: 144,  co2Retro: 95.4 },
+  { title: 'Data Centre — Baseline vs Retrofit',         energyBase: 920,  energyRetro: 587,  costBase: 230, costRetro: 199, co2Base: 73.6, co2Retro: 44.2 }
+];
+
+function selectScenario(el, idx) {
+  document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const s = scenarios[idx];
+  document.getElementById('scenario-title').textContent = s.title;
+  const bars = [
+    [Math.round(s.energyBase), Math.round(s.energyRetro)],
+    [Math.round(s.costBase),   Math.round(s.costRetro)],
+    [s.co2Base,                s.co2Retro]
+  ];
+  ['bar-energy','bar-cost','bar-co2'].forEach((id, i) => {
+    const [base, retro] = bars[i];
+    const rPct = Math.round(retro / base * 100);
+    document.getElementById(id).innerHTML =
+      `<div class="compare-bar baseline" style="height:100%">${base}</div>
+       <div class="compare-bar retrofit" style="height:${rPct}%">${retro}</div>`;
+  });
+}
+</script>
+</body>
+</html>
